@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>INNOFLEX — Production</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { font-family:'Inter',sans-serif; font-size:14px; background:#f0f2f5; color:#1a1a2e; }
+
+/* HEADER */
+.header {
+  background:#1a1a2e; color:#fff;
+  height:52px; padding:0 16px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:300;
+}
+.header-logo { font-size:16px; font-weight:700; letter-spacing:.06em; }
+.header-logo span { color:#f59e0b; }
+.header-date { font-size:12px; color:#94a3b8; }
+
+/* NAV */
+.nav {
+  background:#fff; border-bottom:2px solid #e2e8f0;
+  display:flex; overflow-x:auto; position:sticky; top:52px; z-index:200;
+}
+.nav::-webkit-scrollbar { display:none; }
+.nav-btn {
+  flex-shrink:0; padding:12px 16px;
+  font-size:12px; font-weight:600; color:#64748b;
+  border:none; background:none; cursor:pointer;
+  border-bottom:3px solid transparent; margin-bottom:-2px;
+  transition:all .15s; white-space:nowrap; display:flex; align-items:center; gap:6px;
+}
+.nav-btn:hover { color:#1a1a2e; }
+.nav-btn.active { color:#1a1a2e; border-bottom-color:#1a1a2e; }
+.nav-badge {
+  background:#e2e8f0; color:#64748b;
+  font-size:10px; font-weight:700; padding:1px 6px; border-radius:10px;
+}
+.nav-btn.active .nav-badge { background:#1a1a2e; color:#fff; }
+
+/* SCREENS */
+.screen { display:none; padding:16px; padding-bottom:80px; }
+.screen.active { display:block; }
+
+/* SECTION HEADER */
+.sec { font-size:11px; font-weight:700; color:#64748b; letter-spacing:.08em; text-transform:uppercase; margin:16px 0 10px; }
+
+/* CARD */
+.card { background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:16px; margin-bottom:12px; }
+
+/* FORM */
+.field { margin-bottom:10px; }
+.field label { display:block; font-size:11px; font-weight:600; color:#64748b; margin-bottom:4px; text-transform:uppercase; letter-spacing:.04em; }
+.field input, .field select {
+  width:100%; padding:10px 12px;
+  border:1px solid #e2e8f0; border-radius:6px;
+  font-size:13px; font-family:inherit; color:#1a1a2e;
+  background:#fff; outline:none; -webkit-appearance:none;
+  transition:border-color .15s;
+}
+.field input:focus, .field select:focus { border-color:#1a1a2e; }
+.r2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.r3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+
+/* UPLOAD */
+.upload {
+  border:2px dashed #e2e8f0; border-radius:8px;
+  padding:24px; text-align:center; cursor:pointer;
+  background:#f8fafc; transition:all .15s; position:relative;
+  margin-bottom:12px;
+}
+.upload:hover { border-color:#94a3b8; }
+.upload.done { border-color:#16a34a; border-style:solid; background:#f0fdf4; }
+.upload input { position:absolute; inset:0; opacity:0; cursor:pointer; font-size:0; }
+.upload-icon { font-size:28px; margin-bottom:6px; display:block; }
+.upload-title { font-size:13px; font-weight:600; color:#374151; }
+.upload-sub { font-size:11px; color:#94a3b8; margin-top:3px; }
+.upload-file { font-size:12px; color:#16a34a; font-weight:600; margin-top:6px; }
+
+/* DIVIDER */
+.divider { text-align:center; color:#94a3b8; font-size:11px; font-weight:600; margin:14px 0; position:relative; }
+.divider::before, .divider::after { content:''; position:absolute; top:50%; width:42%; height:1px; background:#e2e8f0; }
+.divider::before { left:0; } .divider::after { right:0; }
+
+/* STATS */
+.stats { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:14px; }
+.stat { background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:12px 10px; text-align:center; }
+.stat-val { font-size:24px; font-weight:700; line-height:1; }
+.stat-key { font-size:10px; color:#94a3b8; font-weight:500; margin-top:3px; text-transform:uppercase; }
+
+/* CAPACITY */
+.cap { margin-bottom:8px; }
+.cap-header { display:flex; justify-content:space-between; margin-bottom:5px; }
+.cap-label { font-size:12px; font-weight:600; color:#374151; }
+.cap-value { font-size:12px; color:#64748b; }
+.cap-track { height:8px; background:#f1f5f9; border-radius:4px; overflow:hidden; }
+.cap-bar { height:100%; border-radius:4px; transition:width .5s ease; }
+.cap-ok   { background:#16a34a; }
+.cap-warn { background:#f59e0b; }
+.cap-over { background:#dc2626; }
+
+/* ALERTS */
+.alert { display:flex; gap:8px; padding:10px 12px; border-radius:6px; margin-bottom:8px; font-size:12px; border-left:4px solid; }
+.alert-ok   { background:#f0fdf4; border-color:#16a34a; color:#15803d; }
+.alert-warn { background:#fffbeb; border-color:#f59e0b; color:#b45309; }
+.alert-err  { background:#fef2f2; border-color:#dc2626; color:#b91c1c; }
+.alert-info { background:#eff6ff; border-color:#2563eb; color:#1d4ed8; }
+
+/* BUTTONS */
+.btn { width:100%; padding:12px; border:none; border-radius:6px; font-size:14px; font-weight:600; font-family:inherit; cursor:pointer; transition:all .15s; }
+.btn-primary { background:#1a1a2e; color:#fff; }
+.btn-primary:hover { background:#2d2d4e; }
+.btn-primary:disabled { background:#e2e8f0; color:#94a3b8; cursor:not-allowed; }
+.btn-outline { background:#fff; border:1.5px solid #e2e8f0; color:#374151; margin-top:8px; }
+.btn-outline:hover { border-color:#94a3b8; }
+.btn-green { background:#16a34a; color:#fff; }
+.btn-amber { background:#f59e0b; color:#fff; }
+
+/* MOUSSE GROUP */
+.mgroup { background:#fff; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:8px; overflow:hidden; }
+.mgroup-header {
+  padding:12px 16px; display:flex; align-items:center; gap:12px;
+  cursor:pointer; transition:background .1s;
+}
+.mgroup-header:hover { background:#f8fafc; }
+.mgroup-color { width:4px; height:36px; border-radius:2px; flex-shrink:0; }
+.mgroup-title { font-size:14px; font-weight:700; flex:1; }
+.mgroup-meta { font-size:11px; color:#64748b; margin-top:1px; }
+.mgroup-machine {
+  font-size:11px; font-weight:700; padding:4px 10px;
+  border-radius:4px; flex-shrink:0;
+}
+.mgroup-machine.scie { background:#eff6ff; color:#1d4ed8; }
+.mgroup-machine.circ { background:#fdf4ff; color:#7c3aed; border:1px solid #e9d5ff; }
+.mgroup-arrow { color:#94a3b8; font-size:16px; transition:transform .2s; flex-shrink:0; }
+.mgroup.open .mgroup-arrow { transform:rotate(90deg); }
+.mgroup-body { display:none; border-top:1px solid #f1f5f9; }
+.mgroup.open .mgroup-body { display:block; }
+
+/* OF ROW */
+.of-row {
+  display:flex; gap:10px; align-items:flex-start;
+  padding:12px 16px; border-bottom:1px solid #f1f5f9;
+}
+.of-row:last-child { border-bottom:none; }
+.of-row:hover { background:#f8fafc; }
+.of-num {
+  background:#f1f5f9; color:#64748b; font-size:11px; font-weight:600;
+  padding:3px 7px; border-radius:4px; flex-shrink:0; margin-top:2px;
+}
+.of-body { flex:1; min-width:0; }
+.of-ref { font-size:11px; color:#94a3b8; margin-bottom:2px; }
+.of-client { font-size:13px; font-weight:600; }
+.of-dims {
+  font-size:20px; font-weight:700; color:#1a1a2e;
+  margin:5px 0 4px; font-variant-numeric:tabular-nums;
+  letter-spacing:.01em;
+}
+.of-dims small { font-size:12px; font-weight:500; color:#94a3b8; }
+.of-tags { display:flex; flex-wrap:wrap; gap:4px; }
+.of-right { text-align:right; flex-shrink:0; }
+.of-qty { font-size:20px; font-weight:700; }
+.of-qty-lbl { font-size:10px; color:#94a3b8; font-weight:500; }
+.of-time { font-size:11px; color:#94a3b8; margin-top:3px; }
+
+/* TAGS */
+.tag { font-size:10px; font-weight:600; padding:2px 7px; border-radius:3px; display:inline-block; }
+.tag-napoli { background:#eff6ff; color:#1d4ed8; }
+.tag-over   { background:#fef2f2; color:#dc2626; }
+.tag-reliq  { background:#f0fdf4; color:#16a34a; }
+.tag-chute  { background:#f8fafc; color:#94a3b8; }
+.tag-circ   { background:#fdf4ff; color:#7c3aed; }
+.tag-colle  { background:#fffbeb; color:#b45309; }
+
+/* COLLE GRID */
+.colle-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.op-card { background:#fff; border:1px solid #e2e8f0; border-radius:8px; overflow:hidden; }
+.op-head { background:#1a1a2e; color:#fff; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; }
+.op-name { font-size:15px; font-weight:700; letter-spacing:.04em; }
+.op-time { font-size:11px; color:#94a3b8; }
+.op-row { padding:10px 14px; border-bottom:1px solid #f1f5f9; }
+.op-row:last-child { border-bottom:none; }
+.op-bon { font-size:10px; color:#94a3b8; }
+.op-client { font-size:13px; font-weight:600; margin:2px 0; }
+.op-abs { font-size:12px; font-weight:700; color:#16a34a; margin:3px 0; }
+.op-meta { font-size:11px; color:#64748b; }
+
+/* RELIQUAT */
+.reliq-card {
+  background:#fff; border:1px solid #e2e8f0; border-radius:8px;
+  padding:12px 16px; margin-bottom:8px;
+  display:flex; align-items:center; gap:14px;
+}
+.reliq-code {
+  font-size:16px; font-weight:700; color:#1a1a2e;
+  background:#f1f5f9; padding:8px 12px; border-radius:6px;
+  flex-shrink:0; min-width:80px; text-align:center;
+  letter-spacing:.04em; border:1px solid #e2e8f0;
+}
+.reliq-dims { font-size:14px; font-weight:600; }
+.reliq-src  { font-size:11px; color:#94a3b8; margin-top:2px; }
+.reliq-note { font-size:11px; color:#b45309; margin-top:3px; font-weight:500; }
+
+/* EMPTY */
+.empty { text-align:center; padding:48px 20px; color:#94a3b8; }
+.empty-icon { font-size:36px; opacity:.3; margin-bottom:10px; }
+.empty-text { font-size:12px; line-height:1.8; }
+
+/* FIXED BAR */
+.fixed-bar {
+  position:fixed; bottom:0; left:0; right:0;
+  padding:12px 16px 20px; background:#fff;
+  border-top:1px solid #e2e8f0; z-index:200;
+}
+
+/* PRINT OVERLAY */
+#printOverlay { display:none; }
+#printOverlay.on {
+  display:block; position:fixed; inset:0; z-index:9999;
+  background:#fff; overflow-y:auto;
+}
+.print-bar {
+  background:#1a1a2e; padding:10px 16px;
+  display:flex; gap:8px; position:sticky; top:0;
+}
+.print-bar button {
+  padding:10px 16px; border:none; border-radius:6px;
+  font-size:13px; font-weight:600; font-family:inherit; cursor:pointer;
+}
+.print-go  { flex:1; background:#f59e0b; color:#fff; }
+.print-cls { background:#374151; color:#fff; }
+.print-content { padding:16px; font-family:inherit; }
+
+@media print {
+  @page { margin:10mm; size:A4; }
+  body { background:#fff; }
+  .print-bar { display:none; }
+}
+
+/* LOGIN */
+.login-overlay {
+  position:fixed; inset:0; background:#f0f2f5;
+  display:flex; align-items:center; justify-content:center;
+  z-index:9999; flex-direction:column; gap:0;
+}
+.login-box {
+  background:#fff; border:1px solid #e2e8f0; border-radius:12px;
+  padding:32px 28px; width:100%; max-width:340px;
+  box-shadow:0 4px 24px rgba(0,0,0,.08);
+}
+.login-logo { font-size:22px; font-weight:700; letter-spacing:.06em; text-align:center; margin-bottom:4px; }
+.login-logo span { color:#f59e0b; }
+.login-sub { font-size:12px; color:#94a3b8; text-align:center; margin-bottom:28px; }
+.login-label { font-size:11px; font-weight:700; color:#374151; letter-spacing:.06em; text-transform:uppercase; margin-bottom:8px; display:block; }
+.login-input {
+  width:100%; padding:14px; border:1.5px solid #e2e8f0; border-radius:8px;
+  font-size:22px; font-weight:700; letter-spacing:.3em; text-align:center;
+  font-family:inherit; outline:none; color:#1a1a2e; background:#f8fafc;
+  transition:border-color .15s;
+}
+.login-input:focus { border-color:#1a1a2e; background:#fff; }
+.login-btn {
+  width:100%; padding:13px; background:#1a1a2e; color:#fff;
+  border:none; border-radius:8px; font-size:14px; font-weight:700;
+  font-family:inherit; cursor:pointer; margin-top:12px; transition:all .15s;
+  letter-spacing:.04em;
+}
+.login-btn:hover { background:#2d2d4e; }
+.login-btn:active { transform:scale(.98); }
+.login-err { font-size:12px; color:#dc2626; text-align:center; margin-top:8px; min-height:18px; font-weight:500; }
+.login-hint { font-size:11px; color:#94a3b8; text-align:center; margin-top:16px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN OVERLAY -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <div class="login-logo">INNO<span>FLEX</span></div>
+    <div class="login-sub">Système de Production — Atelier Découpe</div>
+    <label class="login-label" for="pinInput">Code d'accès</label>
+    <input class="login-input" id="pinInput" type="password" maxlength="6"
+      placeholder="• • • •" autocomplete="off"
+      oninput="clearErr()" onkeydown="if(event.key==='Enter')checkPin()">
+    <button class="login-btn" onclick="checkPin()">Accéder →</button>
+    <div class="login-err" id="pinErr"></div>
+    <div class="login-hint">Contactez votre responsable si vous avez oublié votre code.</div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-logo">INNO<span>FLEX</span> Production</div>
+  <div class="header-date" id="hDate"></div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button class="nav-btn active" onclick="go('import')" id="tab-import">Import <span class="nav-badge" id="b-import">0</span></button>
+  <button class="nav-btn" onclick="go('plan')" id="tab-plan">Plan Jour <span class="nav-badge" id="b-plan">—</span></button>
+  <button class="nav-btn" onclick="go('scies')" id="tab-scies">Scies <span class="nav-badge" id="b-scies">0</span></button>
+  <button class="nav-btn" onclick="go('colle')" id="tab-colle">Collage <span class="nav-badge" id="b-colle">0</span></button>
+  <button class="nav-btn" onclick="go('reliq')" id="tab-reliq">Reliquats <span class="nav-badge" id="b-reliq">0</span></button>
+</div>
+
+<!-- IMPORT -->
+<div class="screen active" id="screen-import">
+
+  <label for="fi" class="upload" id="uploadZone">
+    <input type="file" id="fi" accept=".csv,.txt,.xls,.xlsx" style="display:none" onchange="handleFile(this)">
+    <span class="upload-icon" id="uIcon">📂</span>
+    <div class="upload-title" id="uTitle">Appuyer pour importer les OF</div>
+    <div class="upload-sub">CSV depuis Odoo — fonctionne aussi en Excel</div>
+    <div class="upload-file" id="uFile"></div>
+  </label>
+
+  <div class="divider">ou saisie manuelle</div>
+
+  <div class="card">
+    <div class="r2">
+      <div class="field"><label>N° Bon</label><input id="m_bon" placeholder="BT-2026-XXXX"></div>
+      <div class="field"><label>Client</label><input id="m_cli" placeholder="Nom client"></div>
+    </div>
+    <div class="r3">
+      <div class="field"><label>Long. (cm)</label><input type="number" id="m_l" placeholder="200"></div>
+      <div class="field"><label>Larg. (cm)</label><input type="number" id="m_w" placeholder="70"></div>
+      <div class="field"><label>Haut. (cm)</label><input type="number" id="m_h" placeholder="30"></div>
+    </div>
+    <div class="r2">
+      <div class="field">
+        <label>Type Mousse</label>
+        <select id="m_mousse">
+          <option value="D18">D18</option><option value="D18/ABS">D18/ABS</option>
+          <option value="D20">D20</option><option value="D20/ABS">D20/ABS</option>
+          <option value="D22">D22</option><option value="D22/ABS">D22/ABS</option>
+          <option value="Flex">Flex</option><option value="Flex/ABS">Flex/ABS</option>
+          <option value="D33" selected>D33</option><option value="D33/ABS">D33/ABS</option>
+          <option value="D33 Contour">D33 Contour</option>
+          <option value="D35">D35</option><option value="D35 Contour">D35 Contour</option>
+          <option value="Premium35">Premium 35</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Finition</label>
+        <select id="m_fin">
+          <option value="STD">Standard — 3 faces (avec colle)</option>
+          <option value="NAPOLI">NAPOLI — 2 faces (avec colle)</option>
+          <option value="NUE_STD">Mousse nue — sans colle, 3 faces</option>
+          <option value="NUE_NAP">Mousse nue — sans colle, 2 faces</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Quantité</label><input type="number" id="m_qty" value="1" min="1"></div>
+    <button class="btn btn-outline" onclick="addOF()">+ Ajouter cet OF</button>
+  </div>
+
+  <div id="importStats" style="display:none">
+    <div class="stats">
+      <div class="stat"><div class="stat-val" style="color:#f59e0b" id="sOF">0</div><div class="stat-key">OF</div></div>
+      <div class="stat"><div class="stat-val" id="sPcs">0</div><div class="stat-key">Pièces</div></div>
+      <div class="stat"><div class="stat-val" style="color:#7c3aed" id="sCirc">0</div><div class="stat-key">Circulaire</div></div>
+      <div class="stat"><div class="stat-val" style="color:#dc2626" id="sOver">0</div><div class="stat-key">&gt;200cm</div></div>
+    </div>
+    <button class="btn btn-primary" onclick="generate()">Générer le plan de journée →</button>
+    <button class="btn btn-outline" onclick="demo()">Charger données démo</button>
+    <button class="btn btn-outline" style="color:#dc2626;border-color:#fecaca;margin-top:4px" onclick="resetAll()">🗑 Réinitialiser — remettre à zéro</button>
+  </div>
+
+  <div id="importNote" style="margin-top:8px">
+    <button class="btn btn-outline" onclick="demo()">Charger données démo</button>
+  </div>
+</div>
+
+<!-- PLAN JOUR -->
+<div class="screen" id="screen-plan">
+  <div id="planEmpty" class="empty"><div class="empty-icon">📊</div><div class="empty-text">Importez des OF et générez le plan.</div></div>
+  <div id="planContent" style="display:none">
+    <div class="sec">Charge journalière</div>
+    <div class="card" id="capCard"></div>
+    <div id="planAlerts"></div>
+    <div class="sec">Plan par groupe de mousse</div>
+    <div id="planGroups"></div>
+    <div class="fixed-bar">
+      <button class="btn btn-primary" onclick="printPlan()">🖨 Imprimer plan complet</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCIES -->
+<div class="screen" id="screen-scies">
+  <div id="sciesEmpty" class="empty"><div class="empty-icon">✂️</div><div class="empty-text">Générez le plan depuis l'onglet Import.</div></div>
+  <div id="sciesContent" style="display:none">
+    <div class="sec">Scies verticales — S1 à S5</div>
+    <div id="sciesGroups"></div>
+    <div class="sec" id="circSec" style="display:none">Circulaire — lots ≥ 40 pièces</div>
+    <div id="circGroups"></div>
+    <div class="fixed-bar">
+      <button class="btn btn-primary" onclick="printScies()">🖨 Fiches scies</button>
+    </div>
+  </div>
+</div>
+
+<!-- COLLAGE -->
+<div class="screen" id="screen-colle">
+  <div id="colleEmpty" class="empty"><div class="empty-icon">🔲</div><div class="empty-text">Générez le plan depuis l'onglet Import.</div></div>
+  <div id="colleContent" style="display:none">
+    <div class="sec">Opérateurs collage — G1 à G4</div>
+    <div class="colle-grid" id="colleGrid"></div>
+    <div class="fixed-bar">
+      <button class="btn btn-green" onclick="printColle()">🖨 Fiches collage</button>
+    </div>
+  </div>
+</div>
+
+<!-- RELIQUATS -->
+<div class="screen" id="screen-reliq">
+  <div id="reliqEmpty" class="empty"><div class="empty-icon">📦</div><div class="empty-text">Aucun reliquat.<br>Générez le plan d'abord.</div></div>
+  <div id="reliqContent" style="display:none">
+    <div class="alert alert-warn" style="margin-bottom:12px">
+      ⚠ Étiqueter chaque pièce avec son code et stocker en zone reliquat. Pièces &lt; 15cm = chutes à jeter.
+    </div>
+    <div class="sec">Banque de reliquats du jour</div>
+    <div id="reliqList"></div>
+  </div>
+</div>
+
+<!-- PRINT OVERLAY -->
+<div id="printOverlay">
+  <div class="print-bar">
+    <button class="print-go" onclick="window.print()">🖨 Imprimer / Enregistrer PDF</button>
+    <button class="print-cls" onclick="closeP()">✕ Fermer</button>
+  </div>
+  <div class="print-content" id="printContent"></div>
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────
+const CIRC_MIN  = 40;
+const CHUTE_MIN = 15;
+const SHIFT     = 480;
+const T = { std:4, custom:5, colle:5 };
+const SCIES  = ['S1','S2','S3','S4','S5'];
+const COLLES = ['G1','G2','G3','G4'];
+const M_ORDER= ['D18','D18/ABS','D20','D20/ABS','D22','D22/ABS','Flex','Flex/ABS','D33','D33/ABS','D33 Contour','D35','D35 Contour','Premium35'];
+const M_COLOR= { 'D18':'#8b5cf6','D18/ABS':'#7c3aed','D20':'#10b981','D20/ABS':'#059669','D22':'#3b82f6','D22/ABS':'#2563eb','Flex':'#f59e0b','Flex/ABS':'#d97706','D33':'#ef4444','D33/ABS':'#dc2626','D33 Contour':'#f87171','D35':'#f97316','D35 Contour':'#ea580c','Premium35':'#eab308' };
+
+// Fix object literal syntax issue
+const MOUSSE_COLORS = {
+  'D18':'#8b5cf6','D18/ABS':'#7c3aed','D20':'#10b981','D20/ABS':'#059669',
+  'D22':'#3b82f6','D22/ABS':'#2563eb','Flex':'#f59e0b','Flex/ABS':'#d97706',
+  'D33':'#ef4444','D33/ABS':'#dc2626','D33 Contour':'#f87171',
+  'D35':'#f97316','D35 Contour':'#ea580c','Premium35':'#eab308'
+};
+
+let ofs=[], plan=null, rSeq={};
+
+// ── AUTH ──────────────────────────────────────────────
+// Codes PIN — modifiez ici pour changer les codes
+const USERS = {
+  '2098': { name:'Ayoub — Responsable Production', role:'supervisor' },
+  '3981': { name:'Mohamed — DG',                   role:'supervisor' },
+};
+// Session: stockée pendant la navigation (disparaît à la fermeture du navigateur)
+let currentUser = null;
+
+function checkPin() {
+  const pin = document.getElementById('pinInput').value.trim();
+  const user = USERS[pin];
+  if (user) {
+    currentUser = { ...user, pin };
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('pinInput').value = '';
+    // Update header with user name
+    document.getElementById('hDate').textContent =
+      currentUser.name + ' — ' + document.getElementById('hDate').textContent;
+  } else {
+    document.getElementById('pinErr').textContent = 'Code incorrect. Réessayez.';
+    document.getElementById('pinInput').value = '';
+    document.getElementById('pinInput').focus();
+  }
+}
+
+function clearErr() {
+  document.getElementById('pinErr').textContent = '';
+}
+
+// ── INIT ─────────────────────────────────────────────
+(()=>{
+  const d=new Date();
+  const dy=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  const mo=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  const dateStr=`${dy[d.getDay()]} ${d.getDate()} ${mo[d.getMonth()]} ${d.getFullYear()}`;
+  document.getElementById('hDate').textContent=dateStr;
+  // Auto-focus PIN input
+  setTimeout(()=>document.getElementById('pinInput')?.focus(), 100);
+})();
+
+// ── UTILS ─────────────────────────────────────────────
+// Finitions:
+//   STD      = /ABS Standard — 3 faces collées
+//   NAPOLI   = /ABS NAPOLI   — 2 faces collées
+//   NUE_STD  = Mousse nue sans colle — découpe dimensions directes (3 faces)
+//   NUE_NAP  = Mousse nue sans colle — découpe dimensions directes (2 faces)
+
+const isABS  = o => abs(o.mousse) && o.fin !== 'NUE_STD' && o.fin !== 'NUE_NAP';
+const isNUE  = o => o.fin === 'NUE_STD' || o.fin === 'NUE_NAP';
+const abs    = m => m && (m.includes('/ABS') || m === 'Premium35');
+const nap    = f => f === 'NAPOLI' || f === 'NUE_NAP';
+const over   = L => L > 200;
+const mc     = m => MOUSSE_COLORS[m]||'#64748b';
+const fmt2   = n => String(n).padStart(2,'0');
+const fmtT   = m => `${Math.floor(m/60)}h${fmt2(m%60)}`;
+
+function finLabel(fin) {
+  const map = { STD:'3 faces — avec colle', NAPOLI:'2 faces — avec colle', NUE_STD:'Mousse nue — sans colle', NUE_NAP:'Mousse nue — sans colle (2 faces)', '':'Standard' };
+  return map[fin] || fin;
+}
+
+function calcABS(L,W,H,isNapoli) {
+  if(isNapoli) return { c:{L,W:W-3,H:H-3}, f:{L,W:W+H-2,ep:3}, faces:'2 faces — dessus + côté' };
+  return             { c:{L,W:W-3,H:H-6}, f:{L,W:(2*W)+H-5,ep:3}, faces:'3 faces — dessus + dessous + côté' };
+}
+
+function tPiece(o) { return o.L===200&&o.W===70 ? T.std : T.custom; }
+
+function relCode(m) {
+  const k=m.replace(/[^a-zA-Z0-9]/g,'').toUpperCase().slice(0,3);
+  rSeq[k]=(rSeq[k]||0)+1;
+  return `R${k}${fmt2(rSeq[k])}`;
+}
+
+function getReliq(o) {
+  if(o.L>=200) return null;
+  const r=200-o.L;
+  if(r<CHUTE_MIN) return {type:'chute',cm:r};
+  return {type:'ok',cm:r,code:relCode(o.mousse)};
+}
+
+// ── TABS ─────────────────────────────────────────────
+function go(t) {
+  document.querySelectorAll('.nav-btn,.screen').forEach(e=>e.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  document.getElementById('screen-'+t).classList.add('active');
+}
+
+// ── FILE IMPORT ───────────────────────────────────────
+function handleFile(inp) {
+  const f=inp.files[0]; if(!f) return;
+  document.getElementById('uploadZone').classList.add('done');
+  document.getElementById('uIcon').textContent='✅';
+  document.getElementById('uTitle').textContent='Fichier importé';
+  document.getElementById('uFile').textContent=f.name;
+  const r=new FileReader();
+  r.onload=e=>{const p=parseCSV(e.target.result);ofs=p.length?p:getDemoData();showStats();};
+  r.readAsText(f,'UTF-8');
+}
+
+function parseCSV(txt) {
+  const lines=txt.trim().split('\n'); if(lines.length<2) return [];
+  const sep=lines[0].includes(';')?';':',';
+  const hdr=lines[0].split(sep).map(h=>h.trim().replace(/"/g,'').toLowerCase());
+  const res=[];
+  for(let i=1;i<lines.length;i++){
+    const v=lines[i].split(sep).map(x=>x.trim().replace(/"/g,''));
+    if(v.length<2) continue;
+    const row={};hdr.forEach((h,j)=>row[h]=v[j]||'');
+    const qty=Math.abs(parseFloat(row.qty||row.quantite||row.qte||1))||1;
+    if(qty<=0) continue;
+    const finRaw=(row.finition||row.designation||'').toUpperCase();
+    let fin = '';
+    if(finRaw.includes('NUE') || finRaw.includes('SANS COLLE') || finRaw.includes('SANS_COLLE')) {
+      fin = finRaw.includes('NAP') ? 'NUE_NAP' : 'NUE_STD';
+    } else if(finRaw.includes('NAPOLI')) {
+      fin = 'NAPOLI';
+    } else {
+      fin = 'STD';
+    }    res.push({
+      bon:row.bon||row.of||row.ref||`BT-${1000+i}`,
+      client:row.client||row.nom||'Client',
+      mousse:parseMousse(row.mousse||row.matiere||''),
+      fin,
+      L:parseFloat(row.longueur||row.long||row.l||200)||200,
+      W:parseFloat(row.largeur||row.larg||row.w||70)||70,
+      H:parseFloat(row.hauteur||row.haut||row.h||30)||30,
+      qty:Math.round(qty)
+    });
+  }
+  return res;
+}
+
+function parseMousse(s) {
+  if(!s) return 'D33';
+  const u=s.trim().toUpperCase().replace(/\s+/g,' ');
+  if(u.includes('PREMIUM')||u.includes('MG4')) return 'Premium35';
+  if(u.includes('D35 CONTOUR')) return 'D35 Contour';
+  if(u.includes('D33 CONTOUR')) return 'D33 Contour';
+  for(const [k,v] of [['D33/ABS','D33/ABS'],['D22/ABS','D22/ABS'],['D20/ABS','D20/ABS'],
+      ['D18/ABS','D18/ABS'],['D35/ABS','D35/ABS'],['FLEX/ABS','Flex/ABS'],['FLEX /ABS','Flex/ABS']])
+    if(u.includes(k)) return v;
+  if(u.includes('D35')) return 'D35'; if(u.includes('D33')) return 'D33';
+  if(u.includes('D22')) return 'D22'; if(u.includes('D20')) return 'D20';
+  if(u.includes('D18')) return 'D18'; if(u.includes('FLEX')) return 'Flex';
+  return 'D33';
+}
+
+function addOF() {
+  ofs.push({
+    bon: document.getElementById('m_bon').value.trim()||`BT-${Date.now().toString().slice(-4)}`,
+    client: document.getElementById('m_cli').value.trim()||'Client',
+    mousse: document.getElementById('m_mousse').value,
+    fin: document.getElementById('m_fin').value,
+    L: parseFloat(document.getElementById('m_l').value)||200,
+    W: parseFloat(document.getElementById('m_w').value)||70,
+    H: parseFloat(document.getElementById('m_h').value)||30,
+    qty: parseInt(document.getElementById('m_qty').value)||1
+  });
+  ['m_bon','m_cli','m_l','m_w','m_h'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m_qty').value='1';
+  showStats();
+}
+
+// ── STATS ─────────────────────────────────────────────
+function showStats() {
+  const pieces=ofs.reduce((s,o)=>s+o.qty,0);
+  const circGrps=[...new Set(ofs.filter(o=>o.qty>=CIRC_MIN).map(o=>o.mousse))].length;
+  const ovs=ofs.filter(o=>over(o.L)).length;
+  document.getElementById('sOF').textContent=ofs.length;
+  document.getElementById('sPcs').textContent=pieces;
+  document.getElementById('sCirc').textContent=circGrps;
+  document.getElementById('sOver').textContent=ovs;
+  document.getElementById('b-import').textContent=ofs.length;
+  document.getElementById('importNote').style.display='none';
+  document.getElementById('importStats').style.display='';
+}
+
+// ── GENERATE PLAN ─────────────────────────────────────
+function generate() {
+  rSeq={};
+  plan={ groups:[], scies:{}, colle:{}, reliquats:[] };
+  SCIES.forEach(s=>plan.scies[s]={rows:[],mins:0});
+  COLLES.forEach(g=>plan.colle[g]={rows:[],mins:0});
+
+  // Sort by mousse order then H desc
+  const sorted=[...ofs].sort((a,b)=>{
+    const ia=M_ORDER.indexOf(a.mousse), ib=M_ORDER.indexOf(b.mousse);
+    return ia!==ib ? (ia===-1?99:ia)-(ib===-1?99:ib) : b.H-a.H;
+  });
+
+  // Group by mousse
+  const groups={};
+  sorted.forEach(o=>{
+    if(!groups[o.mousse]) groups[o.mousse]={mousse:o.mousse,rows:[],totalQty:0};
+    groups[o.mousse].rows.push(o);
+    groups[o.mousse].totalQty+=o.qty;
+  });
+
+  // Assign machines
+  let si=0;
+  Object.values(groups).forEach((g,gi)=>{
+    const useCirc = g.totalQty >= CIRC_MIN;
+    const machine = useCirc ? 'CIRC' : SCIES[si%SCIES.length];
+    if(!useCirc) si++;
+    g.machine=machine; g.useCirc=useCirc;
+
+    g.rows.forEach((o,ri)=>{
+      const isAbs   = isABS(o);
+      const isNapoli= nap(o.fin);
+      const isNue   = isNUE(o);
+      const isOver  = over(o.L);
+      const ac = isAbs ? calcABS(Math.min(o.L,200), o.W, o.H, isNapoli) : null;
+      const rel = getReliq(o);
+      const mins= tPiece(o)*o.qty;
+      const entry={...o,seq:ri+1,machine,useCirc,isAbs,isNapoli,isNue,isOver,ac,rel,mins};
+
+      g.rows[ri]=entry;
+
+      if(!useCirc){
+        plan.scies[machine].rows.push(entry);
+        plan.scies[machine].mins+=mins;
+      }
+
+      // Only add to colle if has ABS AND not NUE
+      if(isAbs){
+        const lg=COLLES.reduce((b,g)=>plan.colle[g].mins<plan.colle[b].mins?g:b,COLLES[0]);
+        plan.colle[lg].rows.push({...entry,colleMins:o.qty*T.colle});
+        plan.colle[lg].mins+=o.qty*T.colle;
+      }
+
+      if(rel?.type==='ok') plan.reliquats.push({...rel,bon:o.bon,client:o.client,mousse:o.mousse,W:o.W,H:o.H});
+    });
+
+    plan.groups.push(g);
+  });
+
+  // Update badges
+  const scieTotal=SCIES.reduce((s,k)=>s+plan.scies[k].rows.length,0);
+  const colTotal =COLLES.reduce((s,g)=>s+plan.colle[g].rows.length,0);
+  document.getElementById('b-plan').textContent=plan.groups.length+' grp';
+  document.getElementById('b-scies').textContent=scieTotal;
+  document.getElementById('b-colle').textContent=colTotal;
+  document.getElementById('b-reliq').textContent=plan.reliquats.length;
+
+  renderPlan(); renderScies(); renderColle(); renderReliquats();
+  go('plan');
+}
+
+// ── RENDER PLAN ───────────────────────────────────────
+function renderPlan() {
+  document.getElementById('planEmpty').style.display='none';
+  document.getElementById('planContent').style.display='';
+
+  const pieces=ofs.reduce((s,o)=>s+o.qty,0);
+  const absPcs=ofs.filter(o=>abs(o.mousse)).reduce((s,o)=>s+o.qty,0);
+  const sMin=pieces*T.custom, cMin=absPcs*T.colle;
+  const sCap=SHIFT*5, cCap=SHIFT*4;
+  const sP=Math.min(130,Math.round(sMin/sCap*100)), cP=Math.min(130,Math.round(cMin/cCap*100));
+
+  document.getElementById('capCard').innerHTML=
+    capRow('Scies  —  5 opérateurs × 8h',sP,`${sMin} min requis / ${sCap} min disponibles`)+
+    capRow('Collage  —  4 opérateurs × 8h',cP,`${cMin} min requis / ${cCap} min disponibles`);
+
+  const alerts=[];
+  if(sP>100) alerts.push({t:'err',m:`⛔ SURCHARGE SCIES — ${sP}% . Reporter environ ${Math.ceil((sMin-sCap)/T.custom)} pièces.`});
+  else if(sP>80) alerts.push({t:'warn',m:`⚠ Charge scies élevée — ${sP}% de capacité.`});
+  if(cP>100) alerts.push({t:'err',m:`⛔ SURCHARGE COLLAGE — ${cP}%. Reporter environ ${Math.ceil((cMin-cCap)/T.colle)} pièces.`});
+  const cg=plan.groups.filter(g=>g.useCirc);
+  if(cg.length) alerts.push({t:'info',m:`ℹ Circulaire : ${cg.map(g=>g.mousse+' ('+g.totalQty+'pcs)').join(', ')}`});
+  document.getElementById('planAlerts').innerHTML=alerts.map(a=>`<div class="alert alert-${a.t}">${a.m}</div>`).join('');
+
+  const cont=document.getElementById('planGroups');
+  cont.innerHTML='';
+  plan.groups.forEach((g,i)=>{
+    const el=document.createElement('div');
+    el.className='mgroup'+(i===0?' open':'');
+    el.id='g'+i;
+    const mCls=g.useCirc?'circ':'scie';
+    const mLbl=g.useCirc?'CIRCULAIRE':g.machine;
+    const totMins=g.rows.reduce((s,r)=>s+r.mins,0);
+    el.innerHTML=`
+      <div class="mgroup-header" onclick="tog(${i})">
+        <div class="mgroup-color" style="background:${mc(g.mousse)}"></div>
+        <div style="flex:1">
+          <div class="mgroup-title">${g.mousse}</div>
+          <div class="mgroup-meta">${g.rows.length} OF · ${g.totalQty} pièces · ${fmtT(totMins)}</div>
+        </div>
+        <div class="mgroup-machine ${mCls}">${mLbl}</div>
+        <div class="mgroup-arrow">›</div>
+      </div>
+      <div class="mgroup-body">${rowsHTML(g.rows)}</div>`;
+    cont.appendChild(el);
+  });
+}
+
+function capRow(lbl,pct,det){
+  const c=pct>100?'cap-over':pct>80?'cap-warn':'cap-ok';
+  return `<div class="cap">
+    <div class="cap-header"><span class="cap-label">${lbl}</span><span class="cap-value">${pct}% — ${det}</span></div>
+    <div class="cap-track"><div class="cap-bar ${c}" style="width:${Math.min(100,pct)}%"></div></div>
+  </div>`;
+}
+
+function tog(i){document.getElementById('g'+i)?.classList.toggle('open');}
+
+function rowsHTML(rows) {
+  return rows.map(o=>{
+    const dL=o.isAbs&&o.ac?o.ac.c.L:o.L;
+    const dW=o.isAbs&&o.ac?o.ac.c.W:o.W;
+    const dH=o.isAbs&&o.ac?o.ac.c.H:o.H;
+    const tags=[];
+    if(o.isNue)              tags.push(`<span class="tag" style="background:#f0fdf4;color:#15803d">SANS COLLE</span>`);
+    if(o.isNapoli)           tags.push(`<span class="tag tag-napoli">NAPOLI</span>`);
+    if(o.isOver)             tags.push(`<span class="tag tag-over">L=${o.L}cm — 2 parties</span>`);
+    if(o.isAbs)              tags.push(`<span class="tag tag-colle">→ Collage</span>`);
+    if(o.useCirc)            tags.push(`<span class="tag tag-circ">Circulaire</span>`);
+    if(o.rel?.type==='ok')   tags.push(`<span class="tag tag-reliq">↩ ${o.rel.code} (${o.rel.cm}cm)</span>`);
+    if(o.rel?.type==='chute')tags.push(`<span class="tag tag-chute">Chute ${o.rel.cm}cm</span>`);
+    return `<div class="of-row">
+      <div class="of-num">${o.seq}</div>
+      <div class="of-body">
+        <div class="of-ref">${o.bon}</div>
+        <div class="of-client">${o.client}</div>
+        <div class="of-dims">${dL} <small>×</small> ${dW} <small>×</small> ${dH} <small>cm</small></div>
+        <div class="of-tags">${tags.join('')}</div>
+      </div>
+      <div class="of-right">
+        <div class="of-qty">${o.qty}</div>
+        <div class="of-qty-lbl">pcs</div>
+        <div class="of-time">${o.mins} min</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── RENDER SCIES ──────────────────────────────────────
+function renderScies() {
+  document.getElementById('sciesEmpty').style.display='none';
+  document.getElementById('sciesContent').style.display='';
+  let html='';
+  SCIES.forEach(s=>{
+    const sg=plan.scies[s]; if(!sg.rows.length) return;
+    const pct=Math.min(100,Math.round(sg.mins/SHIFT*100));
+    const col=pct>90?'#dc2626':pct>70?'#f59e0b':'#16a34a';
+    html+=`<div class="mgroup open" style="margin-bottom:8px">
+      <div class="mgroup-header" style="cursor:default">
+        <div class="mgroup-color" style="background:${col}"></div>
+        <div style="flex:1">
+          <div class="mgroup-title">Scie ${s}</div>
+          <div class="mgroup-meta">${sg.rows.length} OF · ${sg.rows.reduce((s,r)=>s+r.qty,0)} pcs · ${fmtT(sg.mins)}</div>
+        </div>
+        <div style="font-size:15px;font-weight:700;color:${col}">${pct}%</div>
+      </div>
+      <div class="mgroup-body">${rowsHTML(sg.rows)}</div>
+    </div>`;
+  });
+  document.getElementById('sciesGroups').innerHTML=html;
+
+  const cg=plan.groups.filter(g=>g.useCirc);
+  if(cg.length){
+    document.getElementById('circSec').style.display='';
+    document.getElementById('circGroups').innerHTML=cg.map(g=>`
+      <div class="mgroup open" style="margin-bottom:8px">
+        <div class="mgroup-header" style="cursor:default">
+          <div class="mgroup-color" style="background:#7c3aed"></div>
+          <div style="flex:1">
+            <div class="mgroup-title">Circulaire — ${g.mousse}</div>
+            <div class="mgroup-meta">${g.totalQty} pièces · lot ≥ ${CIRC_MIN}</div>
+          </div>
+          <div class="mgroup-machine circ">C1 / C2</div>
+        </div>
+        <div class="mgroup-body">${rowsHTML(g.rows)}</div>
+      </div>`).join('');
+  }
+}
+
+// ── RENDER COLLE ──────────────────────────────────────
+function renderColle() {
+  const tot=COLLES.reduce((s,g)=>s+plan.colle[g].rows.length,0);
+  document.getElementById('colleEmpty').style.display=tot?'none':'';
+  document.getElementById('colleContent').style.display=tot?'':'none';
+  if(!tot) return;
+  document.getElementById('colleGrid').innerHTML=COLLES.map(g=>{
+    const cg=plan.colle[g]; if(!cg.rows.length) return '';
+    return `<div class="op-card">
+      <div class="op-head">
+        <div class="op-name">${g}</div>
+        <div class="op-time">${fmtT(cg.mins)}</div>
+      </div>
+      ${cg.rows.map(o=>{
+        const a=o.ac;
+        return `<div class="op-row">
+          <div class="op-bon">${o.bon}</div>
+          <div class="op-client">${o.client}${o.isNapoli?' <span class="tag tag-napoli">NAPOLI</span>':''}</div>
+          ${a?`<div class="op-abs">ABS: ${a.f.L} × ${a.f.W} × ${a.f.ep} cm</div>
+               <div class="op-meta">${a.faces}</div>`:''}
+          <div class="op-meta">×${o.qty} pcs · ${o.qty*T.colle} min</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+
+// ── RENDER RELIQUATS ─────────────────────────────────
+function renderReliquats() {
+  const has=plan.reliquats.length>0;
+  document.getElementById('reliqEmpty').style.display=has?'none':'';
+  document.getElementById('reliqContent').style.display=has?'':'none';
+  if(!has) return;
+  document.getElementById('reliqList').innerHTML=plan.reliquats.map(r=>`
+    <div class="reliq-card">
+      <div class="reliq-code">${r.code}</div>
+      <div>
+        <div class="reliq-dims">${r.mousse} — ${r.cm} cm × ${r.W} cm × ${r.H} cm</div>
+        <div class="reliq-src">Source : ${r.bon} · ${r.client}</div>
+        <div class="reliq-note">⚠ Étiqueter et stocker zone reliquat</div>
+      </div>
+    </div>`).join('');
+}
+
+// ── PRINT ─────────────────────────────────────────────
+function printPlan(){
+  if(!plan) return;
+  const d=new Date(), ds=`${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+  let body=`<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:2px solid #1a1a2e;margin-bottom:14px">
+    <div style="font-size:17px;font-weight:800">INNOFLEX — PLAN JOURNÉE</div>
+    <div style="font-size:12px;color:#64748b">${ds}</div>
+  </div>`;
+  plan.groups.forEach(g=>{
+    const m=g.useCirc?'CIRCULAIRE':g.machine;
+    body+=`<div style="margin-bottom:14px">
+      <div style="background:#1a1a2e;color:#fff;padding:6px 12px;border-radius:4px 4px 0 0;display:flex;justify-content:space-between">
+        <span style="font-weight:700">${g.mousse}</span>
+        <span style="font-size:11px;opacity:.8">${m} · ${g.totalQty} pcs</span>
+      </div>
+      <div style="border:1.5px solid #1a1a2e;border-top:none;border-radius:0 0 4px 4px;padding:7px">${printRows(g.rows)}</div>
+    </div>`;
+  });
+  showPrint(body);
+}
+
+function printRows(rows){
+  return `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">` +
+    rows.map(o=>{
+      const dL=o.isAbs&&o.ac?o.ac.c.L:o.L;
+      const dW=o.isAbs&&o.ac?o.ac.c.W:o.W;
+      const dH=o.isAbs&&o.ac?o.ac.c.H:o.H;
+      const hasABS=o.isAbs&&o.ac;
+      const reliqBadge=o.rel?.type==='ok'
+        ?`<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:3px;padding:3px 6px;margin-top:4px;font-size:10px;font-weight:700;color:#15803d">↩ RELIQUAT ${o.rel.cm}cm — <span style="font-size:13px;letter-spacing:.04em">${o.rel.code}</span></div>`
+        :o.rel?.type==='chute'
+        ?`<div style="background:#f8fafc;border-radius:3px;padding:2px 6px;margin-top:3px;font-size:10px;color:#94a3b8">Chute ${o.rel.cm}cm — jeter</div>`:'';
+      const overBadge=o.isOver
+        ?`<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:3px;padding:3px 6px;margin-top:4px;font-size:10px;font-weight:700;color:#dc2626">⚠ 2 PARTIES : 200cm + ${o.L-200}cm</div>`:'';
+      const napoliBadge=o.isNapoli?`<span style="background:#eff6ff;color:#1d4ed8;font-size:9px;font-weight:700;padding:1px 4px;border-radius:2px;margin-left:3px">NAPOLI</span>`:'';
+      const nueBadge=o.isNue?`<div style="background:#f0fdf4;border-radius:3px;padding:2px 5px;margin-top:2px;font-size:9px;font-weight:700;color:#15803d;display:inline-block">SANS COLLE</div>`:'';
+      return `<div style="border:1.5px solid #1a1a2e;border-radius:5px;overflow:hidden;break-inside:avoid;font-family:Inter,sans-serif">
+        <div style="background:#1a1a2e;color:#fff;padding:4px 8px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:10px;opacity:.65">#${o.seq} · ${o.bon}</span>
+          <span style="font-size:12px;font-weight:700">×${o.qty}</span>
+        </div>
+        <div style="padding:6px 8px">
+          <div style="font-size:10px;color:#374151;font-weight:600;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${o.client}</div>
+          <div style="font-size:9px;color:#94a3b8;margin-bottom:3px">${o.mousse}${napoliBadge}</div>
+          <div style="font-size:22px;font-weight:800;color:#1a1a2e;line-height:1;letter-spacing:-.3px">${dL}×${dW}×${dH}</div>
+          <div style="font-size:9px;color:#94a3b8;margin-top:1px;margin-bottom:4px">cm</div>
+          ${hasABS?`<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:3px;padding:3px 6px;margin-bottom:4px">
+            <div style="font-size:9px;color:#92400e;font-weight:600">FEUILLE ABS</div>
+            <div style="font-size:16px;font-weight:800;color:#b45309;line-height:1.1">${o.ac.f.L}×${o.ac.f.W}×${o.ac.f.ep}<span style="font-size:9px;font-weight:400"> cm</span></div>
+            <div style="font-size:9px;color:#92400e">${o.ac.faces}</div>
+          </div>`:''}
+          ${nueBadge}${reliqBadge}${overBadge}
+          <div style="margin-top:5px;border:1.5px solid #d1d5db;border-radius:3px;padding:3px 6px;display:flex;align-items:center;gap:5px">
+            <div style="width:11px;height:11px;border:1.5px solid #374151;border-radius:2px;flex-shrink:0"></div>
+            <span style="font-size:10px;color:#6b7280">Terminé</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('') + `</div>`;
+}
+
+function printScies(){
+  if(!plan) return;
+  const d=new Date(), ds=`${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+  let body=`<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:2px solid #1a1a2e;margin-bottom:14px">
+    <div style="font-size:17px;font-weight:800">INNOFLEX — FICHES SCIES</div>
+    <div style="font-size:12px;color:#64748b">${ds}</div>
+  </div>`;
+  SCIES.forEach(s=>{
+    const sg=plan.scies[s]; if(!sg.rows.length) return;
+    const totPcs=sg.rows.reduce((a,r)=>a+r.qty,0);
+    body+=`<div style="margin-bottom:14px">
+      <div style="background:#1a1a2e;color:#fff;padding:6px 12px;border-radius:4px 4px 0 0;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:14px;font-weight:800;letter-spacing:.04em">✂ SCIE ${s}</span>
+        <span style="font-size:11px;opacity:.8">${sg.rows.length} OF · ${totPcs} pcs · ${fmtT(sg.mins)}</span>
+      </div>
+      <div style="border:1.5px solid #1a1a2e;border-top:none;border-radius:0 0 4px 4px;padding:7px">${printRows(sg.rows)}</div>
+    </div>`;
+  });
+  plan.groups.filter(g=>g.useCirc).forEach(g=>{
+    body+=`<div style="margin-bottom:14px">
+      <div style="background:#7c3aed;color:#fff;padding:6px 12px;border-radius:4px 4px 0 0;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:14px;font-weight:800">⭕ CIRCULAIRE — ${g.mousse}</span>
+        <span style="font-size:11px;opacity:.8">${g.totalQty} pcs · lot ≥ ${CIRC_MIN}</span>
+      </div>
+      <div style="border:1.5px solid #7c3aed;border-top:none;border-radius:0 0 4px 4px;padding:7px">${printRows(g.rows)}</div>
+    </div>`;
+  });
+  showPrint(body);
+}
+
+function printColle(){
+  if(!plan) return;
+  const d=new Date(), ds=`${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+
+  let body=`<style>
+    @page { size:A4 landscape; margin:8mm; }
+    body { font-family:Inter,Arial,sans-serif; }
+    .colle-page { page-break-after:always; }
+    .colle-page:last-child { page-break-after:avoid; }
+  </style>`;
+
+  COLLES.forEach(g=>{
+    const cg=plan.colle[g]; if(!cg.rows.length) return;
+
+    body+=`<div class="colle-page">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:6px;border-bottom:3px solid #15803d;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-size:18px;font-weight:900;letter-spacing:.06em">INNO<span style="color:#f59e0b">FLEX</span></div>
+        <div style="background:#15803d;color:#fff;padding:4px 14px;border-radius:4px;font-size:15px;font-weight:800;letter-spacing:.06em">COLLAGE — ${g}</div>
+      </div>
+      <div style="font-size:11px;color:#64748b">${ds} · ${cg.rows.length} commandes · ${fmtT(cg.mins)}</div>
+    </div>
+
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead>
+        <tr style="background:#f1f5f9">
+          <th style="padding:5px 6px;text-align:center;font-size:10px;font-weight:700;color:#64748b;border-bottom:2px solid #e2e8f0;width:4%">#</th>
+          <th style="padding:5px 6px;text-align:center;font-size:10px;font-weight:700;color:#64748b;border-bottom:2px solid #e2e8f0;width:6%">QTÉ</th>
+          <th style="padding:5px 6px;text-align:left;font-size:10px;font-weight:700;color:#64748b;border-bottom:2px solid #e2e8f0;width:12%">CLIENT</th>
+          <th colspan="2" style="padding:5px 6px;text-align:center;font-size:11px;font-weight:800;color:#1a1a2e;border-bottom:2px solid #1a1a2e;border-left:2px solid #1a1a2e;border-right:2px solid #1a1a2e;width:52%">PIÈCES À ASSEMBLER</th>
+          <th style="padding:5px 6px;text-align:center;font-size:10px;font-weight:700;color:#64748b;border-bottom:2px solid #e2e8f0;width:18%">FINITION</th>
+          <th style="padding:5px 6px;text-align:center;font-size:10px;font-weight:700;color:#64748b;border-bottom:2px solid #e2e8f0;width:8%">✓</th>
+        </tr>
+        <tr style="background:#f8fafc">
+          <th colspan="3" style="border-bottom:1px solid #e2e8f0"></th>
+          <th style="padding:4px 6px;text-align:center;font-size:10px;font-weight:700;color:#1a1a2e;border-bottom:1px solid #e2e8f0;border-left:2px solid #1a1a2e;background:#f0f0f0;width:26%">① PIÈCE CENTRALE</th>
+          <th style="padding:4px 6px;text-align:center;font-size:10px;font-weight:700;color:#b45309;border-bottom:1px solid #e2e8f0;border-right:2px solid #1a1a2e;background:#fffbeb;width:26%">② FEUILLE ABS</th>
+          <th style="border-bottom:1px solid #e2e8f0"></th>
+          <th style="border-bottom:1px solid #e2e8f0"></th>
+        </tr>
+      </thead>
+      <tbody>
+        ${cg.rows.map((o,i)=>{
+          const a=o.ac;
+          const baseCode=o.mousse.replace('/ABS','').replace('Premium35','D33');
+          const absCode=o.mousse.includes('MG4')||o.mousse==='Premium35'?'MG4000':'ABS';
+          // Simple finition badge
+          let finBadge='';
+          if(o.isNue)
+            finBadge=`<div style="background:#f0fdf4;border:2px solid #16a34a;border-radius:6px;padding:8px 12px;font-size:15px;font-weight:800;color:#15803d">SANS COLLE</div>`;
+          else if(o.isNapoli)
+            finBadge=`<div style="background:#eff6ff;border:2px solid #2563eb;border-radius:6px;padding:8px 12px;font-size:15px;font-weight:800;color:#1d4ed8">NAPOLI</div>`;
+          else
+            finBadge=`<div style="background:#f1f5f9;border:2px solid #64748b;border-radius:6px;padding:8px 12px;font-size:15px;font-weight:800;color:#374151">ARRONDI</div>`;
+          const bg=i%2===0?'#fff':'#f8fafc';
+          const bgC=i%2===0?'#f4f4f4':'#ebebeb';
+          const bgA=i%2===0?'#fffbeb':'#fef3c7';
+          return `<tr style="background:${bg};border-bottom:2px solid #e2e8f0">
+            <td style="padding:8px 6px;text-align:center;color:#94a3b8;font-size:11px;font-weight:600">${o.seq}</td>
+            <td style="padding:8px 6px;text-align:center">
+              <span style="font-size:26px;font-weight:900;color:#1a1a2e">×${o.qty}</span>
+            </td>
+            <td style="padding:8px 6px">
+              <div style="font-size:12px;font-weight:700;color:#1a1a2e">${o.client}</div>
+              <div style="font-size:10px;color:#94a3b8">${o.bon}</div>
+            </td>
+            <!-- PIÈCE CENTRALE -->
+            <td style="padding:8px 10px;background:${bgC};border-left:2px solid #1a1a2e;text-align:center;vertical-align:middle">
+              <div style="display:inline-block;border:2px solid #1a1a2e;border-radius:6px;padding:6px 12px;background:#fff;min-width:110px">
+                <div style="font-size:10px;font-weight:800;color:#64748b;letter-spacing:.06em;margin-bottom:3px">${baseCode}</div>
+                <div style="font-size:24px;font-weight:900;color:#1a1a2e;line-height:1;letter-spacing:-.5px">${a?a.c.L:o.L}×${a?a.c.W:o.W}×${a?a.c.H:o.H}</div>
+                <div style="font-size:10px;color:#94a3b8;margin-top:1px">cm</div>
+              </div>
+            </td>
+            <!-- FEUILLE ABS -->
+            <td style="padding:8px 10px;background:${bgA};border-right:2px solid #1a1a2e;text-align:center;vertical-align:middle">
+              <div style="display:inline-block;border:2px solid #b45309;border-radius:6px;padding:6px 12px;background:#fff;min-width:110px">
+                <div style="font-size:10px;font-weight:800;color:#b45309;letter-spacing:.06em;margin-bottom:3px">${absCode}</div>
+                <div style="font-size:24px;font-weight:900;color:#b45309;line-height:1;letter-spacing:-.5px">${a?a.f.L:'-'}×${a?a.f.W:'-'}×${a?a.f.ep:3}</div>
+                <div style="font-size:10px;color:#92400e;margin-top:1px">cm</div>
+              </div>
+            </td>
+            <!-- FINITION -->
+            <td style="padding:8px 6px;text-align:center;vertical-align:middle">${finBadge}</td>
+            <!-- CHECK -->
+            <td style="padding:8px 6px;text-align:center;vertical-align:middle">
+              <div style="width:32px;height:32px;border:2px solid #1a1a2e;border-radius:4px;margin:0 auto"></div>
+            </td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+    </div>`;
+  });
+
+  showPrint(body);
+}
+
+function showPrint(html){
+  document.getElementById('printContent').innerHTML=html;
+  document.getElementById('printOverlay').classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function closeP(){
+  document.getElementById('printOverlay').classList.remove('on');
+  document.body.style.overflow='';
+}
+
+// ── DEMO ─────────────────────────────────────────────
+function demo(){
+  ofs=[
+    {bon:'BT-1201',client:'Keniflex',       mousse:'Flex/ABS', fin:'STD',     L:200,W:70,H:30,qty:40},
+    {bon:'BT-1202',client:'Ahmed Mekkaoui', mousse:'Flex/ABS', fin:'STD',     L:200,W:70,H:28,qty:20},
+    {bon:'BT-1203',client:'Africhat',       mousse:'Flex/ABS', fin:'STD',     L:200,W:70,H:30,qty:30},
+    {bon:'BT-1204',client:'Riad Fes',       mousse:'D33/ABS',  fin:'STD',     L:200,W:70,H:26,qty:10},
+    {bon:'BT-1205',client:'Riad Fes',       mousse:'D33/ABS',  fin:'STD',     L:200,W:70,H:30,qty:30},
+    {bon:'BT-1206',client:'Haj Mimoun',     mousse:'D33/ABS',  fin:'STD',     L:187,W:75,H:28,qty:3},
+    {bon:'BT-1207',client:'Mr Hamid Oujda', mousse:'Flex/ABS', fin:'NAPOLI',  L:200,W:72,H:28,qty:20},
+    {bon:'BT-1208',client:'MP Beni Mellal', mousse:'D33/ABS',  fin:'NAPOLI',  L:200,W:70,H:46,qty:6},
+    {bon:'BT-1209',client:'Ali Dor',        mousse:'D20/ABS',  fin:'STD',     L:182,W:70,H:46,qty:2},
+    {bon:'BT-1210',client:'ETS Serghini',   mousse:'D33/ABS',  fin:'STD',     L:310,W:70,H:20,qty:1},
+    {bon:'BT-1211',client:'Salon Dounia',   mousse:'D33',      fin:'NUE_STD', L:200,W:90,H:15,qty:5},
+    {bon:'BT-1212',client:'Tapissier Said', mousse:'D22',      fin:'NUE_NAP', L:175,W:70,H:30,qty:3},
+  ];
+  document.getElementById('importNote').style.display='none';
+  showStats();
+}
+// ── RESET ─────────────────────────────────────────────
+function resetAll() {
+  if(!confirm('Remettre la liste à zéro ? Tous les OF seront supprimés.')) return;
+  ofs=[]; plan=null; rSeq={};
+
+  // Reset stats
+  ['sOF','sPcs','sCirc','sOver'].forEach(id=>document.getElementById(id).textContent='0');
+  ['b-import','b-scies','b-colle','b-reliq'].forEach(id=>document.getElementById(id).textContent='0');
+  document.getElementById('b-plan').textContent='—';
+
+  // Hide results, show empty state
+  document.getElementById('importStats').style.display='none';
+  document.getElementById('importNote').style.display='';
+
+  // Reset upload zone
+  document.getElementById('uploadZone').classList.remove('done');
+  document.getElementById('uIcon').textContent='📂';
+  document.getElementById('uTitle').textContent='Importer les OF du jour';
+  document.getElementById('uFile').textContent='';
+  document.getElementById('fi').value='';
+
+  // Clear all screens
+  document.getElementById('planContent').style.display='none';
+  document.getElementById('planEmpty').style.display='';
+  document.getElementById('sciesContent').style.display='none';
+  document.getElementById('sciesEmpty').style.display='';
+  document.getElementById('colleContent').style.display='none';
+  document.getElementById('colleEmpty').style.display='';
+  document.getElementById('reliqContent').style.display='none';
+  document.getElementById('reliqEmpty').style.display='';
+  document.getElementById('planGroups').innerHTML='';
+  document.getElementById('sciesGroups').innerHTML='';
+  document.getElementById('circGroups').innerHTML='';
+  document.getElementById('colleGrid').innerHTML='';
+  document.getElementById('reliqList').innerHTML='';
+
+  go('import');
+}
+// ── INIT ──────────────────────────────────────────────
+demo();
+</script>
+</body>
+</html>
